@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+  <meta charset="UTF-8">
+  <title>Rete.js (dataflow, node editor)</title>
+  
+  
+  
+      <link rel="stylesheet" href="/static/css/style.css">
+
+  
+</head>
+
+<body>
+<button id="dump" onclick="dumpjson()" >Dump</button>
+<button id="load" onclick="loadjson()" >Load</button>
+
+  <div id="rete"></div>
+  <script src='https://cdn.jsdelivr.net/npm/rete@1.1.0/build/rete.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/rete-vue-render-plugin@0.3.0/build/vue-render-plugin.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/rete-connection-plugin@0.4.3/build/connection-plugin.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/alight@0.14.1/alight.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/rete-context-menu-plugin@0.3.5/build/context-menu-plugin.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/rete-area-plugin@0.2.0/build/area-plugin.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/rete-comment-plugin@0.3.0/build/comment-plugin.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/rete-history-plugin@0.1.0/build/history-plugin.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js'></script>
+    <script  src="/static/js/index.js"></script>
+<script>
+function loadjson()
+{
+$.ajax({
+    url: '/load/',
+    //dataType: 'json',
+    type: 'post',
+    //contentType: 'application/json',
+     //processData: false,
+    success: function( data, textStatus, jQxhr ){
+        console.log("success");
+		editor.fromJSON(data);
+		//$('#response pre').html( JSON.stringify( data ) );
+    },
+    error: function( jqXhr, textStatus, errorThrown ){
+        console.log( errorThrown );
+    }
+});
+
+}
+function dumpjson()
+{
+$.ajax({
+    url: '/save/',
+    //dataType: 'json',
+    type: 'post',
+    //contentType: 'application/json',
+    data:"editor="+JSON.stringify( editor.toJSON() ),
+    //processData: false,
+    success: function( data, textStatus, jQxhr ){
+        console.log("success");
+		//$('#response pre').html( JSON.stringify( data ) );
+    },
+    error: function( jqXhr, textStatus, errorThrown ){
+        console.log( errorThrown );
+    }
+});
+  //console.log(editor.toJSON());
+  console.log("dumpjson");
+}
+</script>
+</body>
+
+</html>
