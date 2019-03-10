@@ -3,32 +3,62 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Rete.js (dataflow, node editor)</title>
+  <title>Rete.js Visual programming  a messenger bot</title>
   
   
-  
-      <link rel="stylesheet" href="/static/css/style.css">
+  <link rel='stylesheet' href='http://cdn.muicss.com/mui-0.9.34/css/mui.min.css'>
+<link rel='stylesheet' href='https://rawgit.com/alertifyjs/alertify.js/master/dist/css/alertify.css'>
+
+      <link rel="stylesheet" href="static/css/style.css">
 
   
 </head>
 
 <body>
-<button id="dump" onclick="dumpjson()" >Dump</button>
+
+  <button id="dump" onclick="dumpjson()" >Dump</button>
 <button id="load" onclick="loadjson()" >Load</button>
 
-  <div id="rete"></div>
-  <script src='https://cdn.jsdelivr.net/npm/rete@1.1.0/build/rete.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/rete-vue-render-plugin@0.3.0/build/vue-render-plugin.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/rete-connection-plugin@0.4.3/build/connection-plugin.min.js'></script>
+<div class="content">
+  <div id="editor-wrapper">
+    <div class="node-editor" id="editor"></div>
+  </div>
+  <div id="telegram">
+    <div class="messages" ref="messages">
+      <div class="message" v-for="message in messages" :class="{owner: users[message.user].owner}">
+        <div class="avatar"><img :src="users[message.user].avatar"/></div>
+        <div class="text-wrap">
+          <div class="text" v-html="formatMsg(message.text)"></div>
+        </div>
+      </div>
+    </div>
+    <div class="form row s12">
+      <div class="mui-textfield mui-col-md-8">
+        <input class="validate" id="first_name" v-model="textfield"/>
+      </div>
+      <div class="mui-col-md-4">
+        <button class="mui-btn s12" @click="sendOwner(textfield); textfield=''">Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+  <script src='https://cdn.jsdelivr.net/npm/rete@1.0.0-alpha.10/build/rete.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/alight@0.14.1/alight.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/rete-context-menu-plugin@0.3.5/build/context-menu-plugin.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/rete-vue-render-plugin@0.2.5/build/vue-render-plugin.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/rete-connection-plugin@0.3.2/build/connection-plugin.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/rete-context-menu-plugin@0.1.4/build/context-menu-plugin.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/rete-task-plugin@0.1.7/build/task-plugin.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.3/vue.min.js'></script>
+<script src='http://cdn.muicss.com/mui-0.9.34/js/mui.min.js'></script>
+<script src='https://rawgit.com/alertifyjs/alertify.js/master/dist/js/alertify.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/rete-area-plugin@0.2.0/build/area-plugin.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/rete-comment-plugin@0.3.0/build/comment-plugin.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/rete-history-plugin@0.1.0/build/history-plugin.min.js'></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js'></script>
-    <script  src="/static/js/index.js"></script>
+
+  
+
+    <script src="static/js/index.js"></script>
+
 <script>
 function loadjson()
 {
@@ -70,6 +100,8 @@ $.ajax({
   console.log("dumpjson");
 }
 </script>
+
+
 </body>
 
 </html>
