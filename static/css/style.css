@@ -1,13 +1,9 @@
-html, body {
+body, html {
+  margin: 0;
   height: 100%;
-  width: 100%;
 }
 
-.node .control input, .node .input-control input {
-  width: 140px;
-}
-
-select, input {
+.control input, .input-control input {
   width: 100%;
   border-radius: 30px;
   background-color: white;
@@ -17,11 +13,73 @@ select, input {
   width: 170px;
 }
 
-svg.connection {
-  width: 12px;
-  height: 12px;
+.content {
+  display: flex;
+  height: 100%;
 }
-
-.main-path:hover {
-  stroke: green !important;
+.content #editor-wrapper {
+  flex: 2;
+}
+.content #editor-wrapper #editor .socket.string {
+  background: #6f377e;
+}
+.content #editor-wrapper #editor .socket.action {
+  background: white;
+  border-color: grey;
+  border-radius: 3px;
+  width: 15px;
+}
+.content #editor-wrapper #editor .node.message-event {
+  background: #767676;
+}
+.content #editor-wrapper #editor .input-control input {
+  width: 140px;
+}
+.content #telegram {
+  margin: 15px;
+  flex: 1;
+  height: calc(100% - 2 * 15px);
+  border: 2px solid blue;
+  background: url("http://78.media.tumblr.com/913fc95846350c30232a5608a322b78e/tumblr_obykzyjxZt1vbllj8o4_1280.png");
+  background-size: cover;
+}
+.content #telegram .messages {
+  height: calc(100% - 80px);
+  max-height: calc(100% - 80px);
+  overflow: auto;
+}
+.content #telegram .messages .message {
+  display: flex;
+  padding: 10px;
+}
+.content #telegram .messages .message.owner {
+  flex-direction: row-reverse;
+}
+.content #telegram .messages .message .avatar {
+  display: inline-block;
+  border-radius: 100%;
+  flex-grow: 0;
+  flex-shrink: 0;
+  height: 40px;
+  margin: 0 12px;
+  overflow: hidden;
+}
+.content #telegram .messages .message .avatar img {
+  height: 40px;
+  width: 40px;
+}
+.content #telegram .messages .message .text-wrap {
+  display: inline-block;
+}
+.content #telegram .messages .message .text-wrap .text {
+  padding: 5px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+}
+.content #telegram .messages .message .text-wrap .text a {
+  color: #4f6;
+}
+.content #telegram .form {
+  background: #839aed;
+  height: 80px;
 }
