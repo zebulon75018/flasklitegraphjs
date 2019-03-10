@@ -9,6 +9,7 @@ from flask import jsonify
 import json
 import sys
 import os
+from os import listdir
 
 
 app = Flask(__name__)
@@ -18,11 +19,13 @@ app = Flask(__name__)
 # -------- Login ------------------------------------------------------------- #
 @app.route('/', methods=['GET', 'POST'])
 def login():
-	return render_template('index.html')
+
+	return render_template('index.html', files = listdir("data"))
 
 @app.route("/load/", methods=['POST'])
 def load():
-	with open("testfile.txt") as file:
+	print(str(request.form['name']))
+	with open(os.path.join("data",request.form['name'])) as file:
 		d = json.load(file)
 		print(d)
 		print(type(d))
@@ -31,7 +34,7 @@ def load():
 @app.route("/save/", methods=['POST'])
 def save():
    #print(request.blueprint)
-   with open("testfile.txt","w") as file:  
+   with open(os.path.join("data",request.form['name']+".txt"),"w") as file:  
 	file.write(request.form['editor'])
 	print(request.form['editor'])
    return ""
