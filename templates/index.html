@@ -16,9 +16,10 @@
 
 <body>
 
-  <button id="dump" onclick="dumpjson()" >Dump</button>
-<button id="load" onclick="loadjson()" >Load</button>
-
+  <button id="dump" onclick="dumpjson()" >Save</button>
+  {% for f in files %}
+<button id="load" onclick="loadjson('{{f}}')" >Load {{f}}</button>
+{% endfor %}
 <div class="content">
   <div id="editor-wrapper">
     <div class="node-editor" id="editor"></div>
@@ -60,14 +61,16 @@
     <script src="static/js/index.js"></script>
 
 <script>
-function loadjson()
+function loadjson(name)
 {
+console.log(name)
 $.ajax({
     url: '/load/',
     //dataType: 'json',
     type: 'post',
     //contentType: 'application/json',
      //processData: false,
+	data:"name="+name,
     success: function( data, textStatus, jQxhr ){
         console.log("success");
 		editor.fromJSON(data);
@@ -81,12 +84,14 @@ $.ajax({
 }
 function dumpjson()
 {
+  var name = prompt("Please enter name:", "");
+
 $.ajax({
     url: '/save/',
     //dataType: 'json',
     type: 'post',
     //contentType: 'application/json',
-    data:"editor="+JSON.stringify( editor.toJSON() ),
+    data:"name="+name+"&editor="+JSON.stringify( editor.toJSON() ),
     //processData: false,
     success: function( data, textStatus, jQxhr ){
         console.log("success");
