@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from scripts import tabledef
-from scripts import forms
-from scripts import helpers
+#from scripts import tabledef
+#from scripts import forms
+#from scripts import helpers
 from flask import Flask, redirect, url_for, render_template, request, session
 from flask import jsonify
 
