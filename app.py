@@ -13,6 +13,13 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 
+@app.post("/save", response_class=HTMLResponse)
+async def save(request: Request):
+    payload = await request.json()
+    print(payload)
+    #print(request.query_params['name'])
+    #print(request.query_params['data'])    
+
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request, "id": id})
