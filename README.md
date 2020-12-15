@@ -1,5 +1,5 @@
-# flaskretejs
-flask and rete js 
+# flasklitegraphjs
+flask and litegraph js 
 
 
 ![screnshot](image.png)
