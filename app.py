@@ -3,22 +3,37 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import uvicorn
-
+import os
+import json
 
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-
 templates = Jinja2Templates(directory="templates")
 
+@app.get("/listsaved", response_class=HTMLResponse)
+async def listfile(request: Request):
+    arr = os.listdir("datasaved")
+    result =[]
+    for a in arr:
+        result.append({'text':a,'value':a})
+
+    return json.dumps(result) 
 
 @app.post("/save", response_class=HTMLResponse)
 async def save(request: Request):
-    payload = await request.json()
-    print(payload)
-    #print(request.query_params['name'])
-    #print(request.query_params['data'])    
+    payload = await request.json()    
+    # TODO check security in string...
+    with open(os.path.join('datasaved',"%s.json" % (payload["name"])), "w") as file1:
+        file1.write(json.dumps(payload["data"]))    
+        return "OK"    
+
+@app.get("/load/{filejson}", response_class=HTMLResponse)
+async def load(filejson: str):
+    print(filejson)
+    with open(os.path.join('datasaved',filejson), "r") as file1:
+        return file1.read()
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
