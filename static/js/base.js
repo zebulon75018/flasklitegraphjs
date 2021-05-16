@@ -14,17 +14,6 @@
     //Start["@type"] = { type: "enum", values: ["text","arraybuffer","blob","json"] };
     LiteGraph.registerNodeType("basic/start", Start);
 
-    function OCR()
-    {
-        this.addInput("file", "text");
-        this.addOutput("text", "text");
-        this.addOutput("boxing", "json");
-    }
-    OCR.title = "OCR";
-    OCR.desc = "OCR Tesseract ";
-
-    LiteGraph.registerNodeType("basic/ocr", OCR);
-
     //Subgraph: a node that contains a graph
     function Subgraph() {
         var that = this;
