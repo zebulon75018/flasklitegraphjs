@@ -2,11 +2,19 @@
 <head>
     
     <link rel="stylesheet" type="text/css" href="/static/css/litegraph.css">    
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/static/css/litegraph-editor.css">       
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">    
+    
+       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
     <script type="text/javascript" src="/static/js/litegraph.js"></script>
+    <script type="text/javascript" src="/static/js/litegraph-editor.js"></script>
+    <script type="text/javascript" src="/static/js/base.js"></script>
+   <!--  <script type="text/javascript" src="/static/js/jquery-1.6.2.min.js"></script>  -->
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"  crossorigin="anonymous"></script>
+  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+   
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
     <script type="text/javascript" src="/static/js/bootbox.js"></script>
@@ -19,8 +27,11 @@
 
 <button class='btn' id='save' onclick="savegraph()">Save</button>
 <button class='btn' id='load' onclick="loadgraph()">Load</button>
-<div>
+<button class='btn' id='run' onclick="rungraph()">Run</button>
+<div id="main">
+    <div class="litegraph litegraph-editor">
 <canvas id='mycanvas' width='1024' height='720' style='border: 1px solid'></canvas>
+</div>
 </div>
 
 <script>
@@ -28,16 +39,9 @@ var graph = new LGraph();
 
 var canvas = new LGraphCanvas("#mycanvas", graph);
 
-var node_const = LiteGraph.createNode("basic/const");
+var node_const = LiteGraph.createNode("basic/start");
 node_const.pos = [200,200];
 graph.add(node_const);
-node_const.setValue(4.5);
-
-var node_watch = LiteGraph.createNode("basic/watch");
-node_watch.pos = [700,200];
-graph.add(node_watch);
-
-node_const.connect(0, node_watch, 0 );
 
 graph.start()
 
@@ -55,7 +59,17 @@ function savegraph()
         alert( "Data Saved: " + msg );
     });        
     });
-    
+}
+function rungraph()
+{    
+        $.ajax({
+            method: "POST",
+            url: "run",
+            data: JSON.stringify({ data: graph.serialize() })
+        })
+        .done(function( msg ) {
+        alert( "Data Saved: " + msg );
+    });        
 }
 
 function loadgraph() 

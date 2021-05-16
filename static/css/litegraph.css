@@ -6,6 +6,11 @@
     -moz-user-select: none;
     -webkit-user-select: none;
 	outline: none;
+    font-family: Tahoma, sans-serif;
+}
+
+.lgraphcanvas * {
+    box-sizing: border-box;
 }
 
 .litegraph.litecontextmenu {
@@ -343,6 +348,7 @@
 }
 
 .litegraph .dialog .btn {
+	border: 0;
 	border-radius: 4px;
     padding: 4px 20px;
     margin-left: 0px;
@@ -509,7 +515,7 @@
     position: absolute;
     top: 10px;
     left: 10px;
-    min-height: 2em;
+    /*min-height: 2em;*/
     background-color: #333;
     font-size: 1.2em;
     box-shadow: 0 0 10px black !important;
@@ -529,6 +535,7 @@
 }
 
 .graphdialog input,
+.graphdialog textarea,
 .graphdialog select {
     margin: 3px;
     min-width: 60px;
@@ -540,9 +547,15 @@
     outline: none;
 }
 
+.graphdialog textarea {
+	min-height: 150px;
+}
+
 .graphdialog button {
     margin-top: 3px;
     vertical-align: top;
+    background-color: #999;
+	border: 0;
 }
 
 .graphdialog button.rounded,

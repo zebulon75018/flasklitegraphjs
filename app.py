@@ -12,6 +12,31 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 templates = Jinja2Templates(directory="templates")
 
+def findStart(data):
+  for n in data["nodes"]:
+     if n["type"] == "basic/start":
+         return n["id"]
+
+def findNode(id,data):
+  for n in data["nodes"]:
+     if n["id"] == id:
+         print("found %d " % ( id ))
+         return n
+
+def execute(link,data):
+    origin = findNode(link[1],data)
+    target = findNode(link[3],data)
+    print(origin["type"])
+    print(origin["properties"])
+    print(target["type"])
+
+def recurcivecross(links, data, id ):
+  for n in data["links"]:
+       if n[1] == id: 
+         execute(n, data)
+         recurcivecross(links, data, n[3])
+ 
+
 @app.get("/listsaved", response_class=HTMLResponse)
 async def listfile(request: Request):
     arr = os.listdir("datasaved")
@@ -34,6 +59,15 @@ async def load(filejson: str):
     print(filejson)
     with open(os.path.join('datasaved',filejson), "r") as file1:
         return file1.read()
+
+@app.post("/run", response_class=HTMLResponse)
+async def run(request:Request):
+    payload = await request.json()    
+    data = payload["data"]
+    startid = findStart(data)
+    recurcivecross(data["links"],data,startid)
+
+
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
