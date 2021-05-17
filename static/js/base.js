@@ -4,15 +4,60 @@
 
     function Start()
     {
-        this.addProperty("type", "text");
+        this.addProperty("url", "text");
         this.widget = this.addWidget("text","url","","url");
-        this._data = null;
         this.addOutput("file", "text");
+    }
+    Start.prototype.onPropertyChanged = function(name, value) {
+          this.widget.value = value;
+    }
+    Start.prototype.setValue = function(v)
+    {
+		this.setProperty("file",v);
     }
     Start.title = "Start";
     Start.desc = "Start Node";
     //Start["@type"] = { type: "enum", values: ["text","arraybuffer","blob","json"] };
     LiteGraph.registerNodeType("basic/start", Start);
+
+    function Contains()
+    {
+        this.addProperty("contains", "text");
+        this.addInput("text", "text");
+        this.widget = this.addWidget("text","contains","","text");
+        this.addOutput("true", "boolean");
+        this.addOutput("false", "boolean");
+    }
+    Contains.prototype.onPropertyChanged = function(name, value) {
+          this.widget.value = value;
+    }
+    Contains.prototype.setValue = function(v)
+    {
+		this.setProperty("contains",v);
+    }
+    Contains.title = "Contains";
+    Contains.desc = "Input Contains ";
+    LiteGraph.registerNodeType("if/contains", Contains);
+
+
+    function Logs()
+    {
+        this.addProperty("message", "text");
+        this.addInput("input", "boolean");
+        this.widget = this.addWidget("text","","","text");
+    }
+
+    Contains.prototype.onPropertyChanged = function(name, value) {
+          this.widget.value = value;
+    }
+    Logs.prototype.setValue = function(v)
+    {
+		this.setProperty("message",v);
+    }
+    Logs.title = "Log";
+    Logs.desc = "Log ";
+    LiteGraph.registerNodeType("basic/log", Logs);
+
 
     //Subgraph: a node that contains a graph
     function Subgraph() {
