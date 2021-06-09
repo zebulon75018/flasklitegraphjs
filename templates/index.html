@@ -9,7 +9,8 @@
 
     <script type="text/javascript" src="/static/js/litegraph.js"></script>
     <script type="text/javascript" src="/static/js/litegraph-editor.js"></script>
-    <script type="text/javascript" src="/static/js/base.js"></script>
+    <script type="text/javascript" src="/static/js/p.js"></script>
+    <script type="text/javascript" src="/static/js/pandas.js"></script>
    <!--  <script type="text/javascript" src="/static/js/jquery-1.6.2.min.js"></script>  -->
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"  crossorigin="anonymous"></script>
   
@@ -28,6 +29,8 @@
 <button class='btn' id='save' onclick="savegraph()">Save</button>
 <button class='btn' id='load' onclick="loadgraph()">Load</button>
 <button class='btn' id='run' onclick="rungraph()">Run</button>
+<span id='wait' ><img src="/static/css/wait.gif" width="25px">
+</span>
 <div id="main">
     <div class="litegraph litegraph-editor">
 <canvas id='mycanvas' width='1024' height='720' style='border: 1px solid'></canvas>
@@ -38,12 +41,13 @@
 var graph = new LGraph();
 
 var canvas = new LGraphCanvas("#mycanvas", graph);
-
+/*
 var node_const = LiteGraph.createNode("basic/start");
 node_const.pos = [200,200];
 graph.add(node_const);
-
+*/
 graph.start()
+$("#wait").hide();
 
 function savegraph()
 {    
@@ -62,13 +66,19 @@ function savegraph()
 }
 function rungraph()
 {    
+        $("#wait").show();
         $.ajax({
             method: "POST",
             url: "run",
             data: JSON.stringify({ data: graph.serialize() })
         })
         .done(function( msg ) {
-        alert( "Data Saved: " + msg );
+        $("#wait").hide();
+        
+            bootbox.alert({
+	             message: msg
+            });
+             
     });        
 }
 
