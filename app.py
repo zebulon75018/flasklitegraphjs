@@ -9,88 +9,147 @@ import os
 import json
 import pprint
 
+import json
+import pprint
+import plugin as pg
+
+pm = pg.pluginManager("plugins")
+
+data = {}
+objid = {}
+
+
 app = FastAPI()
-
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
 templates = Jinja2Templates(directory="templates")
 
-def factoryFunction( typenode, nodesource, nodetarget ):
-     if typenode == "if/contains":
-          if nodesource["result"]["text"].find(nodetarget["properties"]["contains"]) is not -1:
-               return True
-          else:
-               return False
-     if typenode == "basic/log":
-          print(" basic log ")
-          print(nodetarget["properties"]["message"])
-          return nodetarget["properties"]["message"]
-     return {}
+class NodeGraph:
+    def __init__(self, node, nobj):
+       self._node = node
+       self._nobj = nobj
+       self._input = []
+       self._output = []
+       self._computed = False
 
-class LiteGraphExecute:
-    def __init__(self, data):
-        self._data = data
-        self._idstart = self.findStart() 
-        # Result cache of node , idnode : result
-        self._cachedresult = {}
+    def addInput(self, input):
+       self._input.append(input)
+
+    def addOutput(self, out):
+       self._output.append(out)
+
+    def getId(self):
+       return self._node["id"] 
+
+    def getType(self):
+       return self._node["type"] 
+   
+    def display(self):
+       if len(self._input)!=0:
+           for i in self._input:
+               print("\t %s " % ( i._node["type"] ))
+       if len(self._output)!=0:
+           for o in self._output: 
+               print("\t %s " % (o._node["type"]))
+    
+    def isComputed(self):
+        return self._computed
+
+    def run(self):
+        self._computed = True
+        print(" RUN %s \n" % ( self._node["type"] ))
+        param=[]
+        for i in self._input:
+              if i.isComputed() == False:
+                     i.run() 
+              param.append(i._nobj.getValue(i._node))
+        print(param)
+        result = self._nobj.execute(param)
+
+        if len(self._output) == 0:
+           print("RESULT")
+           print(result)
+           return result
+
+        for o in self._output:
+             return o.run()
+
+class Graph:
+    def __init__(self):
+      self._listnode = []
+      self._result =""
+
+    def addNode(self, node, nobj):
+      self._listnode.append(NodeGraph(node,nobj))
+   
+    def findNode(self, id ):
+      for ng in self._listnode:
+           if ng.getId() == id:
+                 return ng
 
     def findStart(self):
-        for n in self._data["nodes"]:
-            if n["type"] == "basic/start":
-                return n["id"]
-
-    def findNode(self, id):
-        for n in self._data["nodes"]:
-            if n["id"] == id:
-                return n
-
-    def execute(self, link):
-        origin = self.findNode(link[1])
-        target = self.findNode(link[3])
-        print(origin["type"])
-        print(origin["properties"])
-        print(target["type"])
-        for index,n in enumerate(self._data["nodes"]):
-            if n["id"] == link[3]:
-                if "result" not in n:
-                     self._data["nodes"][index]["result"] = factoryFunction(target["type"],origin,target)
-
-                return self._data["nodes"][index]["result"] 
+      for ng in self._listnode:
+           if ng.getType() ==  "basic/start":
+                 return ng
 
 
-    def recurcivecross(self, links, id ):
-        result = ""
-        for l in self._data["links"]:
-            if l[1] == id: 
-                origin = self.findNode(l[1])
-                # test node if.
-                if origin["type"].find("if/") is not -1:
-                      # the way is True slot 0 
-                      print(l)
-                      pprint.pprint(origin)
-                      if l[2] == 0 and origin["result"] is True:
-                          tmpresult = json.dumps(self.execute(l))
-                          print("WAY TRUE")
-                          if tmpresult is not None:
-                            result  = result + json.dumps(tmpresult)
+    def connect(self, idinput, idoutput):
+      nginput  = self.findNode(idinput)
+      ngoutput = self.findNode(idoutput)
+      nginput.addOutput(ngoutput)
+      ngoutput.addInput(nginput)
 
-                      elif l[2] == 1 and origin["result"] is False:
-                          tmpresult = json.dumps(self.execute(l))
-                          print("WAY FALSE")
-                          if tmpresult is not None:
-                            result  = result + json.dumps(tmpresult)
-                else:
-                      tmpresult = json.dumps(self.execute(l))
-                      if tmpresult is not None:
-                            result  = result + json.dumps(tmpresult)
-                
-                tmpresult = self.recurcivecross(links, l[3])
-                if tmpresult is not None:
-                      result = result + tmpresult
-        return result
+    def display(self ):
+      for ng in self._listnode:
+         ng.display()
+   
+    def result(self):
+       return self.result
+
+
+def findclasse( name ) : 
+    for obj in pm.classes():
+         if name == "basic/%s" % type(obj).__name__:
+             #print(" Found %s " %( type(obj).__name__))
+             return obj
+    return None
+
+def findStart(data):
+  for n in data["nodes"]:
+     if n["type"] == "basic/start":
+         return n["id"]
+
+def findNode(id):
+  for n in data["nodes"]:
+     if n["id"] == id:
+         print("found %d " % ( id ))
+         return n
+
+def getinput(node):
+   return node["inputs"]
+
+def execute(link):
+    origin = findNode(link[1])
+    target = findNode(link[3])
+    for i in getinput(target):
+        n1 = findNode(i["link"])
+        n1obj = findclasse(n1["type"])
+        print(n1obj.getValue(n1))
+
+    print(origin["type"])
+    objorigin = findclasse(origin["type"])
+    objtarget = findclasse(target["type"])
+    objid[origin["id"]] = findclasse(origin["type"])
+    objid[target["id"]] = findclasse(target["type"])
+    print(origin["properties"])
+    print(target["type"])
+
+def recurcivecross(links, id ):
+  for n in data["links"]:
+       if n[1] == id: 
+         execute(n)
+         recurcivecross(links,  n[3])
  
-    def run(self):
-        return self.recurcivecross(self._data["links"], self._idstart)
+
 
 @app.get("/listsaved", response_class=HTMLResponse)
 async def listfile(request: Request):
@@ -106,7 +165,7 @@ async def save(request: Request):
     payload = await request.json()    
     # TODO check security in string...
     with open(os.path.join('datasaved',"%s.json" % (payload["name"])), "w") as file1:
-        file1.write(json.dumps(payload["data"]))    
+        file1.write(json.dumps(payload["data"], indent=4))    
         return "OK"    
 
 @app.get("/load/{filejson}", response_class=HTMLResponse)
@@ -115,13 +174,20 @@ async def load(filejson: str):
     with open(os.path.join('datasaved',filejson), "r") as file1:
         return file1.read()
 
-@app.post("/run", response_class=HTMLResponse)
+@app.post("/run", response_class=JSONResponse)
 async def run(request:Request):
     payload = await request.json()    
-    
-    lge = LiteGraphExecute( payload["data"] )
-    return JSONResponse(content=lge.run())
+    g = Graph()
+    data = payload["data"]
+    for n in data["nodes"]:
+      nobj = findclasse(n["type"])
+      g.addNode(n,nobj)
+    for l in data["links"]:
+      g.connect(l[1],l[3])
 
+    #g.display()
+    print(g.findStart().run())
+    return JSONResponse( g.findStart().run() )
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -129,5 +195,4 @@ async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request, "id": id})
 
 if __name__ == "__main__":
-    uvicorn.run("app:app", host="127.0.0.1", port=5000, debug=True,log_level="info")
-
+    uvicorn.run("readlitegraph:app", host="127.0.0.1", port=5002, debug=True,log_level="info")
